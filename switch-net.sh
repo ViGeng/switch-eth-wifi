@@ -1,13 +1,24 @@
 #!/bin/bash
 
-# USAGE: ./switch-net.sh [eth|wifi]
+# Required parameters:
+# @raycast.schemaVersion 1
+# @raycast.title switch-net
+# @raycast.mode compact
+
+# Optional parameters:
+# @raycast.icon 🌐
+# @raycast.argument1 { "type": "text", "placeholder": "eth or wifi" }
+
+# Documentation:
+# @raycast.description switch between wifi and ethernet
+# @raycast.author ViGeng
+# @raycast.authorURL https://raycast.com/ViGeng
 
 MODE=$1
 
 # 1. Input Validation
 if [[ "$MODE" != "eth" && "$MODE" != "wifi" ]]; then
     echo "Error: Please specify mode 'eth' or 'wifi'"
-    echo "Usage: ./switch-net.sh eth"
     exit 1
 fi
 
@@ -66,11 +77,13 @@ if [ "$EUID" -eq 0 ]; then
     eval $FINAL_CMD
 else
     # FIX: Escape quotes for AppleScript
-    # We replace every quote (") with an escaped quote (\") so AppleScript treats them as part of the string
     ESCAPED_CMD=$(echo "$FINAL_CMD" | sed 's/"/\\"/g')
     
-    # Execute safely via osascript to trigger the native macOS password prompt
-    osascript -e "do shell script \"$ESCAPED_CMD\" with administrator privileges"
+    # Execute safely via osascript
+    if ! output=$(osascript -e "do shell script \"$ESCAPED_CMD\" with administrator privileges" 2>&1); then
+        echo "Failed: $output"
+        exit 1
+    fi
 fi
 
 echo "Successfully switched priority to: $MODE"
