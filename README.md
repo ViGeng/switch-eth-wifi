@@ -1,4 +1,4 @@
-# Switch Network Priority (macOS)
+# Switch Eth/WiFi
 
 A simple bash script to quickly toggle network priority between **Ethernet** and **Wi-Fi** on macOS. 
 
